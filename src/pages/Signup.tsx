@@ -55,14 +55,30 @@ const Signup = () => {
       return;
     }
 
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters long');
+    const password = formData.password;
+    const passwordErrors: string[] = [];
+
+    if (password.length < 8) {
+      passwordErrors.push('Password must be at least 8 characters long.');
+    }
+    if (!/\d/.test(password)) {
+      passwordErrors.push('Password must contain at least one number.');
+    }
+    if (!/[A-Z]/.test(password)) {
+      passwordErrors.push('Password must contain at least one uppercase letter.');
+    }
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+      passwordErrors.push('Password must contain at least one special character.');
+    }
+
+    if (passwordErrors.length > 0) {
+      setError(passwordErrors.join('\n')); // <-- single string with line breaks
       setIsLoading(false);
       return;
     }
 
     // Simulate API call
-    const { email, firstName, lastName, role, password } = formData;
+    const { email, firstName, lastName, role } = formData;
     try {
       const response = await signup({ email, firstName, lastName, role, password });
       if (response.status === 201) {
